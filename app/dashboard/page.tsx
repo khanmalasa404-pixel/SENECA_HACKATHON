@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   BarChart,
@@ -24,8 +25,25 @@ import {
 import { MetricCard } from "@/components/MetricCard";
 
 export default function DashboardPage() {
-  const [selectedName, setSelectedName] = useState(sampleNeighbourhoods[0].name);
+  const searchParams = useSearchParams();
+  const communityFromUrl = searchParams.get("community");
+
+  const [selectedName, setSelectedName] = useState(
+    sampleNeighbourhoods.some((area) => area.name === communityFromUrl)
+      ? communityFromUrl!
+      : sampleNeighbourhoods[0].name
+  );
+
   const [view, setView] = useState("Utility View");
+
+  useEffect(() => {
+    if (
+      communityFromUrl &&
+      sampleNeighbourhoods.some((area) => area.name === communityFromUrl)
+    ) {
+      setSelectedName(communityFromUrl);
+    }
+  }, [communityFromUrl]);
 
   const selectedArea = useMemo(
     () =>
@@ -42,12 +60,30 @@ export default function DashboardPage() {
   );
 
   const chartData = [
-    { name: "Energy Burden", score: scores.energyBurdenScore },
-    { name: "Renter Gap", score: scores.renterUpgradeGapScore },
-    { name: "Program Gap", score: scores.programAccessGapScore },
-    { name: "Building Risk", score: scores.buildingEfficiencyRiskScore },
-    { name: "Low-Income Risk", score: scores.equityVulnerabilityScore },
-    { name: "Retrofit Gap", score: selectedArea.retrofitEligibilityGapScore },
+    {
+      name: "Shelter Burden",
+      score: selectedArea.renterShelterBurdenPercent,
+    },
+    {
+      name: "Renter Barrier",
+      score: scores.renterUpgradeGapScore,
+    },
+    {
+      name: "Program Gap",
+      score: scores.programAccessGapScore,
+    },
+    {
+      name: "Building Risk",
+      score: scores.buildingEfficiencyRiskScore,
+    },
+    {
+      name: "Low-Income Risk",
+      score: scores.equityVulnerabilityScore,
+    },
+    {
+      name: "Retrofit Gap",
+      score: selectedArea.retrofitEligibilityGapScore,
+    },
   ];
 
   const comparisonData = sampleNeighbourhoods.map((area) => {
@@ -70,10 +106,11 @@ export default function DashboardPage() {
               Understand where renter energy burden is highest
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
-              This dashboard helps utilities and municipalities identify why a
-              community may be high priority by breaking down energy burden,
-              renter retrofit barriers, program access gaps, building efficiency
-              risk, and low-income vulnerability.
+              This dashboard combines ArcGIS / Statistics Canada census
+              indicators with prototype utility and program-access inputs to
+              identify why a community may be high priority. It breaks down
+              shelter-cost burden, renter retrofit barriers, program access
+              gaps, building efficiency risk, and low-income vulnerability.
             </p>
           </div>
 
@@ -130,13 +167,13 @@ export default function DashboardPage() {
           <MetricCard
             title="Overall Priority"
             value={`${scores.overallPriorityScore}/100`}
-            note="Combined score for energy burden, renter barriers, and program gaps."
+            note="Combined score for shelter burden, renter barriers, and program gaps."
           />
 
           <MetricCard
-            title="Energy Burden"
-            value={`${scores.energyBurdenPercent}%`}
-            note="Estimated annual electricity cost as a share of household income."
+            title="Shelter-Cost Burden"
+            value={`${selectedArea.renterShelterBurdenPercent}%`}
+            note="Real ArcGIS/StatsCan renter households spending over 30% of income on shelter costs."
           />
 
           <MetricCard
@@ -158,7 +195,8 @@ export default function DashboardPage() {
               Risk Driver Breakdown
             </h2>
             <p className="mt-2 text-sm text-slate-600">
-              This shows which factors are driving the community’s energy burden priority score.
+              This shows which real-data and prototype factors are driving the
+              community priority score.
             </p>
 
             <div className="mt-6 h-80">
@@ -179,12 +217,66 @@ export default function DashboardPage() {
             </h2>
 
             <div className="mt-5 space-y-4 text-sm">
-              <ProfileRow label="Avg. monthly bill" value={`$${selectedArea.avgMonthlyBill}`} />
-              <ProfileRow label="Median income" value={`$${selectedArea.medianIncome.toLocaleString()}`} />
-              <ProfileRow label="Renter households" value={`${selectedArea.renterHouseholdPercent}%`} />
-              <ProfileRow label="Owner-occupied households" value={`${selectedArea.ownerOccupiedPercent}%`} />
-              <ProfileRow label="Low-income households" value={`${selectedArea.lowIncomeHouseholdPercent}%`} />
-              <ProfileRow label="Retrofit eligibility gap" value={`${selectedArea.retrofitEligibilityGapScore}/100`} />
+              <ProfileRow
+                label="Population 2021"
+                value={selectedArea.population2021.toLocaleString()}
+              />
+
+              <ProfileRow
+                label="Occupied private dwellings"
+                value={selectedArea.occupiedPrivateDwellings2021.toLocaleString()}
+              />
+
+              <ProfileRow
+                label="Population density"
+                value={`${selectedArea.populationDensityPerSqKm2021.toLocaleString()} / km²`}
+              />
+
+              <ProfileRow
+                label="Median household income"
+                value={`$${selectedArea.medianIncome.toLocaleString()}`}
+              />
+
+              <ProfileRow
+                label="Renter households"
+                value={`${selectedArea.renterHouseholdPercent}%`}
+              />
+
+              <ProfileRow
+                label="Owner-occupied households"
+                value={`${selectedArea.ownerOccupiedPercent}%`}
+              />
+
+              <ProfileRow
+                label="Total shelter burden"
+                value={`${selectedArea.shelterBurdenPercent}%`}
+              />
+
+              <ProfileRow
+                label="Renter shelter burden"
+                value={`${selectedArea.renterShelterBurdenPercent}%`}
+              />
+
+              <ProfileRow
+                label="Owner shelter burden"
+                value={`${selectedArea.ownerShelterBurdenPercent}%`}
+              />
+
+              <ProfileRow
+                label="Retrofit eligibility gap"
+                value={`${selectedArea.retrofitEligibilityGapScore}/100`}
+              />
+            </div>
+
+            <div className="mt-5 rounded-2xl bg-slate-100 p-4">
+              <p className="text-sm font-semibold text-slate-950">Data note</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Income, renter/owner household share, shelter-cost burden,
+                population, dwelling count, and density are based on ArcGIS /
+                Statistics Canada city-level Census Subdivision data. Utility
+                bill, program access, and retrofit gap values are prototype
+                estimates for this demo.
+              </p>
             </div>
           </div>
         </section>
@@ -195,7 +287,8 @@ export default function DashboardPage() {
               Neighbourhood Priority Comparison
             </h2>
             <p className="mt-2 text-sm text-slate-600">
-              Compare overall energy burden priority scores across sample communities.
+              Compare overall priority scores across selected GTA demo
+              communities.
             </p>
 
             <div className="mt-6 h-72">
@@ -250,7 +343,7 @@ export default function DashboardPage() {
           </div>
 
           <Link
-            href="/report"
+            href={`/report?community=${encodeURIComponent(selectedArea.name)}`}
             className="mt-6 inline-block rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800"
           >
             Generate Full Report
@@ -263,9 +356,9 @@ export default function DashboardPage() {
 
 function ProfileRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between border-b border-slate-100 pb-3">
+    <div className="flex justify-between gap-4 border-b border-slate-100 pb-3">
       <span className="text-slate-500">{label}</span>
-      <span className="font-semibold text-slate-950">{value}</span>
+      <span className="text-right font-semibold text-slate-950">{value}</span>
     </div>
   );
 }

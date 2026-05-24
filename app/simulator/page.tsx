@@ -1,20 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sampleNeighbourhoods } from "@/data/sampleNeighbourhoods";
 import { calculateEnergyScores, getPriorityLabel } from "@/lib/scoring";
 
 export default function SimulatorPage() {
-  const [selectedName, setSelectedName] = useState(sampleNeighbourhoods[0].name);
+  const searchParams = useSearchParams();
+  const communityFromUrl = searchParams.get("community");
+
+  const initialCommunity =
+    sampleNeighbourhoods.find(
+      (community) => community.name === communityFromUrl
+    ) || sampleNeighbourhoods[0];
+
+  const [selectedName, setSelectedName] = useState(initialCommunity.name);
+  const [area, setArea] = useState({ ...initialCommunity });
 
   const selectedCommunity =
     sampleNeighbourhoods.find((community) => community.name === selectedName) ||
     sampleNeighbourhoods[0];
 
-  const [area, setArea] = useState({
-    ...selectedCommunity,
-  });
+  useEffect(() => {
+    if (!communityFromUrl) return;
+
+    const community = sampleNeighbourhoods.find(
+      (item) => item.name === communityFromUrl
+    );
+
+    if (community) {
+      setSelectedName(community.name);
+      setArea({ ...community });
+    }
+  }, [communityFromUrl]);
 
   function handleCommunityChange(name: string) {
     const community =
@@ -31,13 +50,14 @@ export default function SimulatorPage() {
       [field]: value,
     }));
   }
+
   function improveProgramAccess() {
     setArea((previous) => ({
       ...previous,
       programAccessScore: Math.min(10, previous.programAccessScore + 4),
     }));
   }
-  
+
   function addDirectInstallProgram() {
     setArea((previous) => ({
       ...previous,
@@ -49,7 +69,7 @@ export default function SimulatorPage() {
       ),
     }));
   }
-  
+
   function launchLandlordPartnership() {
     setArea((previous) => ({
       ...previous,
@@ -61,7 +81,7 @@ export default function SimulatorPage() {
       programAccessScore: Math.min(10, previous.programAccessScore + 2),
     }));
   }
-  
+
   function reduceBillByTenPercent() {
     setArea((previous) => ({
       ...previous,
@@ -88,8 +108,8 @@ export default function SimulatorPage() {
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
               Adjust bills, income, renter concentration, program access,
-              building age, low-income vulnerability, and retrofit eligibility
-              gaps to see how priority changes.
+              building efficiency risk, low-income vulnerability, and retrofit
+              eligibility gaps to see how the community priority score changes.
             </p>
           </div>
 
@@ -114,7 +134,7 @@ export default function SimulatorPage() {
             </button>
 
             <Link
-              href="/dashboard"
+              href={`/dashboard?community=${encodeURIComponent(selectedName)}`}
               className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800"
             >
               Back to Dashboard
@@ -129,45 +149,46 @@ export default function SimulatorPage() {
             </h2>
 
             <div className="mt-6 space-y-6">
-            <div className="mt-6 rounded-3xl bg-slate-100 p-5">
-  <p className="font-semibold text-slate-950">
-    Quick intervention tests
-  </p>
-  <p className="mt-2 text-sm leading-6 text-slate-600">
-    Click an intervention to simulate how renter-focused programs could reduce
-    the community priority score.
-  </p>
+              <div className="rounded-3xl bg-slate-100 p-5">
+                <p className="font-semibold text-slate-950">
+                  Quick intervention tests
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Click an intervention to simulate how renter-focused programs
+                  could reduce the community priority score.
+                </p>
 
-  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-    <button
-      onClick={improveProgramAccess}
-      className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-    >
-      Improve Program Access
-    </button>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <button
+                    onClick={improveProgramAccess}
+                    className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                  >
+                    Improve Program Access
+                  </button>
 
-    <button
-      onClick={addDirectInstallProgram}
-      className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-    >
-      Add Renter Direct-Install Program
-    </button>
+                  <button
+                    onClick={addDirectInstallProgram}
+                    className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                  >
+                    Add Renter Direct-Install Program
+                  </button>
 
-    <button
-      onClick={launchLandlordPartnership}
-      className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-    >
-      Launch Landlord Retrofit Partnership
-    </button>
+                  <button
+                    onClick={launchLandlordPartnership}
+                    className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                  >
+                    Launch Landlord Retrofit Partnership
+                  </button>
 
-    <button
-      onClick={reduceBillByTenPercent}
-      className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-    >
-      Reduce Monthly Bill by 10%
-    </button>
-  </div>
-</div>
+                  <button
+                    onClick={reduceBillByTenPercent}
+                    className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                  >
+                    Reduce Monthly Bill by 10%
+                  </button>
+                </div>
+              </div>
+
               <Slider
                 label="Average Monthly Energy Bill"
                 value={area.avgMonthlyBill}
@@ -181,7 +202,7 @@ export default function SimulatorPage() {
                 label="Median Household Income"
                 value={area.medianIncome}
                 min={30000}
-                max={100000}
+                max={150000}
                 prefix="$"
                 onChange={(value) => updateField("medianIncome", value)}
               />
@@ -307,12 +328,12 @@ export default function SimulatorPage() {
             <div className="mt-6 rounded-3xl bg-slate-100 p-5">
               <p className="font-semibold text-slate-950">What this means</p>
               <p className="mt-2 leading-7 text-slate-700">
-                This scenario shows how energy burden increases when households
+                This scenario shows how energy burden changes when households
                 face high monthly energy bills, lower incomes, high renter
                 concentration, weak program access, and limited control over
                 building upgrades. The score helps utilities identify where
                 renter-focused programs and landlord partnerships could reduce
-                energy affordability pressure.
+                affordability pressure.
               </p>
             </div>
 
@@ -324,8 +345,9 @@ export default function SimulatorPage() {
                 Test an intervention by increasing the Program Access Score,
                 lowering the Retrofit Eligibility Gap, or reducing average
                 monthly energy bills. If the priority score decreases, it shows
-                how renter-friendly programs, direct-install efficiency measures,
-                and landlord partnerships could reduce energy burden risk.
+                how renter-friendly programs, direct-install efficiency
+                measures, and landlord partnerships could reduce renter burden
+                risk.
               </p>
             </div>
           </div>

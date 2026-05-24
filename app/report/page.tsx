@@ -1,15 +1,29 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sampleNeighbourhoods } from "@/data/sampleNeighbourhoods";
-import {
-  calculateEnergyScores,
-  getPriorityLabel,
-} from "@/lib/scoring";
+import { calculateEnergyScores, getPriorityLabel } from "@/lib/scoring";
 
 export default function ReportPage() {
-  const [selectedName, setSelectedName] = useState(sampleNeighbourhoods[0].name);
+  const searchParams = useSearchParams();
+const communityFromUrl = searchParams.get("community");
+
+const [selectedName, setSelectedName] = useState(
+  sampleNeighbourhoods.some((community) => community.name === communityFromUrl)
+    ? communityFromUrl!
+    : sampleNeighbourhoods[0].name
+);
+
+useEffect(() => {
+  if (
+    communityFromUrl &&
+    sampleNeighbourhoods.some((community) => community.name === communityFromUrl)
+  ) {
+    setSelectedName(communityFromUrl);
+  }
+}, [communityFromUrl]);
 
   const area = useMemo(
     () =>
@@ -21,7 +35,10 @@ export default function ReportPage() {
   const scores = calculateEnergyScores(area);
   const priorityLabel = getPriorityLabel(scores.overallPriorityScore);
 
-  const recommendations = getEnergyBurdenRecommendations(area, scores.overallPriorityScore);
+  const recommendations = getEnergyBurdenRecommendations(
+    area,
+    scores.overallPriorityScore
+  );
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-8">
@@ -35,8 +52,9 @@ export default function ReportPage() {
               {area.name} Renter Energy Burden Report
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
-              A targeted action report for identifying where high energy costs,
-              renter concentration, and limited access to efficiency programs overlap.
+              A targeted action report for identifying where renter shelter-cost
+              burden, upgrade barriers, and limited access to efficiency
+              programs overlap.
             </p>
           </div>
 
@@ -54,7 +72,7 @@ export default function ReportPage() {
             </select>
 
             <Link
-              href="/dashboard"
+              href={`/dashboard?community=${encodeURIComponent(area.name)}`}
               className="rounded-2xl border border-slate-300 px-5 py-3 font-semibold text-slate-800 hover:bg-white"
             >
               Back to Dashboard
@@ -78,7 +96,8 @@ export default function ReportPage() {
               {area.name}, {area.city}
             </h2>
             <p className="mt-2 text-slate-600">
-              Prepared for utilities, municipalities, housing partners, and community organizations.
+              Prepared for utilities, municipalities, housing partners, and
+              community organizations.
             </p>
           </div>
 
@@ -86,7 +105,7 @@ export default function ReportPage() {
             <ReportMetric
               label="Priority Level"
               value={priorityLabel}
-              note="Based on energy burden, renter gap, program access, and building efficiency risk."
+              note="Based on shelter burden, renter barriers, program access, and building efficiency risk."
             />
 
             <ReportMetric
@@ -96,9 +115,9 @@ export default function ReportPage() {
             />
 
             <ReportMetric
-              label="Energy Burden"
-              value={`${scores.energyBurdenPercent}%`}
-              note="Estimated annual electricity cost as share of household income."
+              label="Renter Shelter Burden"
+              value={`${area.renterShelterBurdenPercent}%`}
+              note="Real ArcGIS/StatsCan renter households spending over 30% of income on shelter costs."
             />
 
             <ReportMetric
@@ -114,11 +133,15 @@ export default function ReportPage() {
             </h3>
             <p className="mt-3 leading-7 text-slate-700">
               {area.name} has an overall priority score of{" "}
-              <span className="font-semibold">{scores.overallPriorityScore}/100</span>.
-              The key issue is not only energy affordability, but also the renter-owner
-              split. In communities with many renters, households may pay the utility
-              bill while landlords or property owners control upgrades such as insulation,
-              windows, HVAC systems, or major appliance replacements.
+              <span className="font-semibold">
+                {scores.overallPriorityScore}/100
+              </span>
+              . GridWise identifies this community by combining real
+              ArcGIS/Statistics Canada census indicators with prototype utility
+              and program-access inputs. The key issue is not only affordability,
+              but also the renter-owner split: renters may pay monthly utility
+              and shelter costs while landlords or property owners control major
+              upgrades such as insulation, windows, HVAC systems, or appliances.
             </p>
           </div>
 
@@ -127,11 +150,71 @@ export default function ReportPage() {
               Core Recommendation
             </h3>
             <p className="mt-3 leading-7 text-slate-700">
-              GridWise recommends prioritizing {area.name} for renter-focused energy
-              affordability outreach, direct-install efficiency programs, landlord
-              partnership opportunities, and targeted communication about bill support
-              or conservation programs.
+              GridWise recommends prioritizing {area.name} for renter-focused
+              energy affordability outreach, direct-install efficiency programs,
+              landlord partnership opportunities, and targeted communication
+              about bill support or conservation programs.
             </p>
+          </div>
+
+          <div className="mt-8">
+            <h3 className="text-xl font-bold text-slate-950">
+              Real Data Profile
+            </h3>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <DataPoint
+                label="Population 2021"
+                value={area.population2021.toLocaleString()}
+              />
+
+              <DataPoint
+                label="Occupied private dwellings"
+                value={area.occupiedPrivateDwellings2021.toLocaleString()}
+              />
+
+              <DataPoint
+                label="Population density"
+                value={`${area.populationDensityPerSqKm2021.toLocaleString()} / km²`}
+              />
+
+              <DataPoint
+                label="Median household income"
+                value={`$${area.medianIncome.toLocaleString()}`}
+              />
+
+              <DataPoint
+                label="Total shelter burden"
+                value={`${area.shelterBurdenPercent}%`}
+              />
+
+              <DataPoint
+                label="Renter shelter burden"
+                value={`${area.renterShelterBurdenPercent}%`}
+              />
+
+              <DataPoint
+                label="Owner shelter burden"
+                value={`${area.ownerShelterBurdenPercent}%`}
+              />
+
+              <DataPoint
+                label="Renter households"
+                value={`${area.renterHouseholdPercent}%`}
+              />
+            </div>
+
+            <div className="mt-5 rounded-3xl bg-slate-100 p-5">
+              <p className="font-semibold text-slate-950">Data note</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Median household income, renter/owner household share,
+                shelter-cost burden, population, dwelling count, and density are
+                based on ArcGIS / Statistics Canada city-level Census
+                Subdivision data. Average monthly electricity bill, program
+                access score, building efficiency risk, and retrofit eligibility
+                gap are prototype estimates for this demo.
+              </p>
+            </div>
           </div>
 
           <div className="mt-8">
@@ -141,9 +224,9 @@ export default function ReportPage() {
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <RiskItem
-                title="Energy Burden"
-                score={`${scores.energyBurdenScore}/100`}
-                description={`Average monthly bill is estimated at $${area.avgMonthlyBill}, with median income of $${area.medianIncome.toLocaleString()}.`}
+                title="Shelter-Cost Burden"
+                score={`${area.renterShelterBurdenPercent}%`}
+                description={`${area.renterShelterBurdenPercent}% of renter households in the city-level Census Subdivision spend more than 30% of income on shelter costs. This is used as a real affordability-pressure indicator.`}
               />
 
               <RiskItem
@@ -161,13 +244,13 @@ export default function ReportPage() {
               <RiskItem
                 title="Building Efficiency Risk"
                 score={`${scores.buildingEfficiencyRiskScore}/100`}
-                description={`Building efficiency risk is rated ${area.buildingAgeScore}/10, which may indicate older or less efficient housing stock.`}
+                description={`Building efficiency risk is rated ${area.buildingAgeScore}/10, which may indicate older or less efficient housing stock. This remains a prototype estimate until building-condition data is integrated.`}
               />
 
               <RiskItem
                 title="Low-Income Vulnerability"
                 score={`${scores.equityVulnerabilityScore}/100`}
-                description={`${area.lowIncomeHouseholdPercent}% of households are estimated as low-income, increasing sensitivity to high utility bills.`}
+                description={`${area.lowIncomeHouseholdPercent}% of households are estimated as low-income, increasing sensitivity to high utility bills and housing affordability pressure.`}
               />
 
               <RiskItem
@@ -200,11 +283,12 @@ export default function ReportPage() {
               How This Solves the Challenge
             </h3>
             <p className="mt-3 leading-7 text-slate-700">
-              This report helps utilities visualize where energy burden and renter
-              upgrade gaps overlap. Instead of only promoting owner-focused incentives,
-              partners can identify renter-heavy communities and design outreach,
-              direct-install programs, landlord partnerships, and bill-support pathways
-              that better match the reality of who pays the bill and who controls upgrades.
+              This report helps utilities visualize where renter affordability
+              pressure and upgrade barriers overlap. Instead of only promoting
+              owner-focused incentives, partners can identify renter-heavy
+              communities and design outreach, direct-install programs, landlord
+              partnerships, and bill-support pathways that better match the
+              reality of who pays the bill and who controls upgrades.
             </p>
           </div>
         </section>
@@ -255,6 +339,15 @@ function ReportMetric({
       <p className="text-sm font-medium text-slate-500">{label}</p>
       <p className="mt-2 text-2xl font-bold text-slate-950">{value}</p>
       <p className="mt-2 text-sm text-slate-600">{note}</p>
+    </div>
+  );
+}
+
+function DataPoint({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+      <p className="text-sm text-slate-500">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-slate-950">{value}</p>
     </div>
   );
 }

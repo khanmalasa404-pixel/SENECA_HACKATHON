@@ -299,6 +299,41 @@ export default function MapPage() {
             />
           </div>
         </section>
+
+        <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
+            Data Sources & Prototype Notes
+          </p>
+
+          <h2 className="mt-2 text-2xl font-bold text-slate-950">
+            How real data is used in this prototype
+          </h2>
+
+          <p className="mt-3 max-w-4xl leading-7 text-slate-700">
+            GridWise uses ArcGIS / Statistics Canada Shelter Costs 2021 data at
+            the Census Subdivision level to support renter household percentage,
+            owner household percentage, and shelter-cost burden indicators. These
+            real city-level values are applied to selected GTA communities for
+            demonstration.
+          </p>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <MethodologyCard
+              title="Real ArcGIS / StatsCan Data"
+              text="Renter households, owner households, and shelter-cost burden are based on the Shelter Costs 2021 Feature Service."
+            />
+
+            <MethodologyCard
+              title="Prototype Estimates"
+              text="Average monthly energy bill, program access score, building efficiency risk, and retrofit eligibility gap are estimated for demo purposes."
+            />
+
+            <MethodologyCard
+              title="Production Upgrade"
+              text="A full version would use finer geography such as dissemination areas, neighbourhood boundaries, utility billing data, and program participation records."
+            />
+          </div>
+        </section>
       </div>
     </main>
   );
