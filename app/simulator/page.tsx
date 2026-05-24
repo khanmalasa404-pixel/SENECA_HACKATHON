@@ -32,8 +32,11 @@ export default function SimulatorPage() {
     }));
   }
 
+  const baselineScores = calculateEnergyScores(selectedCommunity);
   const scores = calculateEnergyScores(area);
   const priorityLabel = getPriorityLabel(scores.overallPriorityScore);
+  const impactDifference =
+    scores.overallPriorityScore - baselineScores.overallPriorityScore;
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-8">
@@ -161,9 +164,7 @@ export default function SimulatorPage() {
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-950">
-              Live Results
-            </h2>
+            <h2 className="text-xl font-bold text-slate-950">Live Results</h2>
             <p className="mt-2 text-sm text-slate-600">
               Adjust the sliders to see how changes in bills, income, renter
               concentration, program access, and upgrade barriers affect the
@@ -176,6 +177,23 @@ export default function SimulatorPage() {
               <p className="mt-2 text-slate-300">
                 Score: {scores.overallPriorityScore}/100
               </p>
+            </div>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              <ImpactCard
+                label="Original Score"
+                value={`${baselineScores.overallPriorityScore}/100`}
+              />
+
+              <ImpactCard
+                label="Scenario Score"
+                value={`${scores.overallPriorityScore}/100`}
+              />
+
+              <ImpactCard
+                label="Estimated Impact"
+                value={`${impactDifference > 0 ? "+" : ""}${impactDifference} pts`}
+              />
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -284,6 +302,15 @@ function Slider({
 function ResultCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-slate-200 p-4">
+      <p className="text-sm text-slate-500">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function ImpactCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
       <p className="text-sm text-slate-500">{label}</p>
       <p className="mt-1 text-2xl font-bold text-slate-950">{value}</p>
     </div>
