@@ -13,7 +13,12 @@ export function calculateEnergyScores(area: Neighbourhood) {
   const heatVulnerabilityScore = clamp(area.heatRiskScore * 10);
   const buildingEfficiencyRiskScore = clamp(area.buildingAgeScore * 10);
   const programAccessGapScore = clamp((10 - area.programAccessScore) * 10);
-
+  const renterUpgradeGapScore = clamp(
+    area.renterHouseholdPercent * 0.55 +
+      area.retrofitEligibilityGapScore * 0.25 +
+      area.buildingAgeScore * 5 +
+      programAccessGapScore * 0.15
+  );
   const equityVulnerabilityScore = clamp(
     area.lowIncomeHouseholdPercent * 1.4 + area.seniorPopulationPercent * 1.2
   );
@@ -27,27 +32,26 @@ export function calculateEnergyScores(area: Neighbourhood) {
     area.buildingAgeScore * 5 + area.outageCount * 6 + programAccessGapScore * 0.2
   );
   const overallPriorityScore = clamp(
-    energyBurdenScore * 0.2 +
-      outageRiskScore * 0.15 +
-      heatVulnerabilityScore * 0.15 +
-      buildingEfficiencyRiskScore * 0.1 +
-      programAccessGapScore * 0.12 +
+    energyBurdenScore * 0.3 +
+      renterUpgradeGapScore * 0.25 +
+      programAccessGapScore * 0.15 +
+      buildingEfficiencyRiskScore * 0.12 +
       equityVulnerabilityScore * 0.1 +
-      sustainabilityOpportunityScore * 0.08 +
-      gridModernizationNeedScore * 0.1
+      sustainabilityOpportunityScore * 0.08
   );
 
   return {
     energyBurdenPercent: Number(energyBurdenPercent.toFixed(2)),
     energyBurdenScore,
+    renterUpgradeGapScore,
     outageRiskScore,
     heatVulnerabilityScore,
     buildingEfficiencyRiskScore,
     programAccessGapScore,
     equityVulnerabilityScore,
     sustainabilityOpportunityScore,
-    overallPriorityScore,
     gridModernizationNeedScore,
+    overallPriorityScore,
   };
 }
 

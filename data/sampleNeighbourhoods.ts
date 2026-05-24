@@ -12,6 +12,11 @@ export type Neighbourhood = {
   evChargerAccessScore: number;
   solarPotentialScore: number;
   coolingCentreAccessScore: number;
+
+  // Problem Statement 01 fields
+  renterHouseholdPercent: number;
+  ownerOccupiedPercent: number;
+  retrofitEligibilityGapScore: number;
 };
 
 export const sampleNeighbourhoods: Neighbourhood[] = [
@@ -29,6 +34,9 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     evChargerAccessScore: 2,
     solarPotentialScore: 7,
     coolingCentreAccessScore: 3,
+    renterHouseholdPercent: 66,
+    ownerOccupiedPercent: 34,
+    retrofitEligibilityGapScore: 82,
   },
   {
     name: "Malton",
@@ -44,6 +52,9 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     evChargerAccessScore: 3,
     solarPotentialScore: 8,
     coolingCentreAccessScore: 4,
+    renterHouseholdPercent: 58,
+    ownerOccupiedPercent: 42,
+    retrofitEligibilityGapScore: 74,
   },
   {
     name: "Downtown Brampton",
@@ -59,6 +70,9 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     evChargerAccessScore: 4,
     solarPotentialScore: 7,
     coolingCentreAccessScore: 5,
+    renterHouseholdPercent: 49,
+    ownerOccupiedPercent: 51,
+    retrofitEligibilityGapScore: 63,
   },
   {
     name: "Rexdale",
@@ -74,6 +88,9 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     evChargerAccessScore: 2,
     solarPotentialScore: 6,
     coolingCentreAccessScore: 3,
+    renterHouseholdPercent: 62,
+    ownerOccupiedPercent: 38,
+    retrofitEligibilityGapScore: 79,
   },
   {
     name: "Port Credit",
@@ -89,5 +106,8 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     evChargerAccessScore: 7,
     solarPotentialScore: 6,
     coolingCentreAccessScore: 8,
+    renterHouseholdPercent: 32,
+    ownerOccupiedPercent: 68,
+    retrofitEligibilityGapScore: 38,
   },
 ];

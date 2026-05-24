@@ -6,19 +6,30 @@ import { sampleNeighbourhoods } from "@/data/sampleNeighbourhoods";
 import {
   calculateEnergyScores,
   getPriorityLabel,
-  getRecommendation,
 } from "@/lib/scoring";
 
 export default function SimulatorPage() {
-  const baseArea = sampleNeighbourhoods[0];
+  const [selectedName, setSelectedName] = useState(sampleNeighbourhoods[0].name);
+
+  const selectedCommunity =
+    sampleNeighbourhoods.find((community) => community.name === selectedName) ||
+    sampleNeighbourhoods[0];
 
   const [area, setArea] = useState({
-    ...baseArea,
+    ...selectedCommunity,
   });
+
+  function handleCommunityChange(name: string) {
+    const community =
+      sampleNeighbourhoods.find((item) => item.name === name) ||
+      sampleNeighbourhoods[0];
+
+    setSelectedName(name);
+    setArea({ ...community });
+  }
 
   const scores = calculateEnergyScores(area);
   const priorityLabel = getPriorityLabel(scores.overallPriorityScore);
-  const recommendation = getRecommendation(area, scores.overallPriorityScore);
 
   function updateField(field: keyof typeof area, value: number) {
     setArea((previous) => ({
@@ -33,23 +44,44 @@ export default function SimulatorPage() {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Scenario Simulator
+              Energy Burden Scenario Simulator
             </p>
             <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
-              Test how community conditions change the priority score
+              Test how renter barriers affect energy burden priority
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
-              Adjust the values below to simulate how affordability, outages, heat risk,
-              and program access affect the recommended action.
+              Adjust bills, income, renter concentration, program access, building
+              age, and retrofit eligibility gaps to see how priority changes.
             </p>
           </div>
 
-          <Link
-            href="/dashboard"
-            className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800"
-          >
-            Back to Dashboard
-          </Link>
+          <div className="flex flex-col gap-3 sm:flex-row">
+  <select
+    value={selectedName}
+    onChange={(event) => handleCommunityChange(event.target.value)}
+    className="rounded-2xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-800 shadow-sm"
+  >
+    {sampleNeighbourhoods.map((community) => (
+      <option key={community.name} value={community.name}>
+        {community.name}
+      </option>
+    ))}
+  </select>
+
+  <button
+    onClick={() => setArea({ ...selectedCommunity })}
+    className="rounded-2xl border border-slate-300 px-5 py-3 font-semibold text-slate-800 hover:bg-white"
+  >
+    Reset Scenario
+  </button>
+
+  <Link
+    href="/dashboard"
+    className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800"
+  >
+    Back to Dashboard
+  </Link>
+</div>
         </div>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -60,7 +92,7 @@ export default function SimulatorPage() {
 
             <div className="mt-6 space-y-6">
               <Slider
-                label="Average Monthly Bill"
+                label="Average Monthly Energy Bill"
                 value={area.avgMonthlyBill}
                 min={80}
                 max={250}
@@ -69,7 +101,7 @@ export default function SimulatorPage() {
               />
 
               <Slider
-                label="Median Income"
+                label="Median Household Income"
                 value={area.medianIncome}
                 min={30000}
                 max={100000}
@@ -78,20 +110,12 @@ export default function SimulatorPage() {
               />
 
               <Slider
-                label="Outage Count"
-                value={area.outageCount}
-                min={0}
-                max={12}
-                onChange={(value) => updateField("outageCount", value)}
-              />
-
-              <Slider
-                label="Heat Risk Score"
-                value={area.heatRiskScore}
-                min={1}
-                max={10}
-                suffix="/10"
-                onChange={(value) => updateField("heatRiskScore", value)}
+                label="Renter Household Percentage"
+                value={area.renterHouseholdPercent}
+                min={10}
+                max={90}
+                suffix="%"
+                onChange={(value) => updateField("renterHouseholdPercent", value)}
               />
 
               <Slider
@@ -101,6 +125,24 @@ export default function SimulatorPage() {
                 max={10}
                 suffix="/10"
                 onChange={(value) => updateField("programAccessScore", value)}
+              />
+
+              <Slider
+                label="Building Age / Efficiency Risk"
+                value={area.buildingAgeScore}
+                min={1}
+                max={10}
+                suffix="/10"
+                onChange={(value) => updateField("buildingAgeScore", value)}
+              />
+
+              <Slider
+                label="Retrofit Eligibility Gap"
+                value={area.retrofitEligibilityGapScore}
+                min={0}
+                max={100}
+                suffix="/100"
+                onChange={(value) => updateField("retrofitEligibilityGapScore", value)}
               />
             </div>
           </div>
@@ -119,16 +161,44 @@ export default function SimulatorPage() {
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <ResultCard label="Energy Burden" value={`${scores.energyBurdenScore}/100`} />
-              <ResultCard label="Outage Risk" value={`${scores.outageRiskScore}/100`} />
-              <ResultCard label="Heat Risk" value={`${scores.heatVulnerabilityScore}/100`} />
-              <ResultCard label="Program Gap" value={`${scores.programAccessGapScore}/100`} />
-              <ResultCard label="Grid Need" value={`${scores.gridModernizationNeedScore}/100`} />
+              <ResultCard
+                label="Energy Burden"
+                value={`${scores.energyBurdenScore}/100`}
+              />
+              <ResultCard
+                label="Renter Upgrade Gap"
+                value={`${scores.renterUpgradeGapScore}/100`}
+              />
+              <ResultCard
+                label="Program Access Gap"
+                value={`${scores.programAccessGapScore}/100`}
+              />
+              <ResultCard
+                label="Building Risk"
+                value={`${scores.buildingEfficiencyRiskScore}/100`}
+              />
             </div>
 
             <div className="mt-6 rounded-3xl bg-slate-100 p-5">
-              <p className="font-semibold text-slate-950">Recommendation</p>
-              <p className="mt-2 leading-7 text-slate-700">{recommendation}</p>
+              <p className="font-semibold text-slate-950">What this means</p>
+              <p className="mt-2 leading-7 text-slate-700">
+                This scenario shows how high energy bills, lower income, high renter
+                concentration, and weak program access can increase priority. If a
+                community has many renters, traditional owner-focused incentives may
+                not fully solve the issue unless renters, landlords, utilities, and
+                municipalities are connected through targeted programs.
+              </p>
+            </div>
+
+            <div className="mt-6 rounded-3xl border border-slate-200 p-5">
+              <p className="font-semibold text-slate-950">
+                Best intervention to test
+              </p>
+              <p className="mt-2 leading-7 text-slate-700">
+                Try increasing the Program Access Score or lowering the Retrofit
+                Eligibility Gap. If the overall priority score decreases, it shows
+                how renter-friendly programs could reduce the community’s energy burden risk.
+              </p>
             </div>
           </div>
         </section>
