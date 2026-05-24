@@ -1,6 +1,7 @@
 "use client";
-import Link from "next/link";
+
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   BarChart,
   Bar,
@@ -17,7 +18,6 @@ import {
 import { sampleNeighbourhoods } from "@/data/sampleNeighbourhoods";
 import {
   calculateEnergyScores,
-  getPartnerActions,
   getPriorityLabel,
   getRecommendation,
 } from "@/lib/scoring";
@@ -25,7 +25,7 @@ import { MetricCard } from "@/components/MetricCard";
 
 export default function DashboardPage() {
   const [selectedName, setSelectedName] = useState(sampleNeighbourhoods[0].name);
-  const [view, setView] = useState("Company View");
+  const [view, setView] = useState("Utility View");
 
   const selectedArea = useMemo(
     () =>
@@ -36,17 +36,18 @@ export default function DashboardPage() {
 
   const scores = calculateEnergyScores(selectedArea);
   const priorityLabel = getPriorityLabel(scores.overallPriorityScore);
-  const recommendation = getRecommendation(selectedArea, scores.overallPriorityScore);
-  const partnerActions = getPartnerActions(selectedArea, scores.overallPriorityScore);
+  const recommendation = getRecommendation(
+    selectedArea,
+    scores.overallPriorityScore
+  );
 
   const chartData = [
     { name: "Energy Burden", score: scores.energyBurdenScore },
-    { name: "Outage Risk", score: scores.outageRiskScore },
-    { name: "Heat Risk", score: scores.heatVulnerabilityScore },
+    { name: "Renter Gap", score: scores.renterUpgradeGapScore },
     { name: "Program Gap", score: scores.programAccessGapScore },
-    { name: "Equity Risk", score: scores.equityVulnerabilityScore },
-    { name: "Sustainability", score: scores.sustainabilityOpportunityScore },
-    { name: "Grid Need", score: scores.gridModernizationNeedScore },
+    { name: "Building Risk", score: scores.buildingEfficiencyRiskScore },
+    { name: "Low-Income Risk", score: scores.equityVulnerabilityScore },
+    { name: "Retrofit Gap", score: selectedArea.retrofitEligibilityGapScore },
   ];
 
   const comparisonData = sampleNeighbourhoods.map((area) => {
@@ -63,13 +64,16 @@ export default function DashboardPage() {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Community Energy, Equity and Sustainability
+              Energy Burden Decision Dashboard
             </p>
             <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
-            GridWise Decision Dashboard
+              Understand where renter energy burden is highest
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
-            A decision-support dashboard that helps utilities, municipalities, and community partners understand which communities may need grid reliability investment, affordability support, climate resilience planning, or sustainability programs first.
+              This dashboard helps utilities and municipalities identify why a
+              community may be high priority by breaking down energy burden,
+              renter retrofit barriers, program access gaps, building efficiency
+              risk, and low-income vulnerability.
             </p>
           </div>
 
@@ -79,9 +83,9 @@ export default function DashboardPage() {
               onChange={(event) => setView(event.target.value)}
               className="rounded-2xl border border-slate-300 bg-white px-4 py-3 font-medium shadow-sm"
             >
-              <option>Company View</option>
-              <option>Community View</option>
+              <option>Utility View</option>
               <option>Municipal View</option>
+              <option>Community Partner View</option>
             </select>
 
             <select
@@ -126,32 +130,35 @@ export default function DashboardPage() {
           <MetricCard
             title="Overall Priority"
             value={`${scores.overallPriorityScore}/100`}
-            note="Combined affordability, reliability, equity, and sustainability score."
+            note="Combined score for energy burden, renter barriers, and program gaps."
           />
+
           <MetricCard
             title="Energy Burden"
             value={`${scores.energyBurdenPercent}%`}
-            note="Estimated annual electricity cost as a share of income."
+            note="Estimated annual electricity cost as a share of household income."
           />
+
           <MetricCard
-            title="Outage Count"
-            value={selectedArea.outageCount}
-            note="Sample outage frequency indicator."
+            title="Renter Retrofit Gap"
+            value={`${scores.renterUpgradeGapScore}/100`}
+            note="Shows where renters may pay bills but lack control over upgrades."
           />
+
           <MetricCard
             title="Program Access Gap"
             value={`${scores.programAccessGapScore}/100`}
-            note="Higher score means lower access to available support."
+            note="Higher score means lower access to support programs."
           />
         </section>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-3">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
             <h2 className="text-xl font-bold text-slate-950">
-              Risk and Opportunity Breakdown
+              Risk Driver Breakdown
             </h2>
             <p className="mt-2 text-sm text-slate-600">
-              This shows which factors are driving the community priority score.
+              This shows which factors are driving the community’s energy burden priority score.
             </p>
 
             <div className="mt-6 h-80">
@@ -172,26 +179,12 @@ export default function DashboardPage() {
             </h2>
 
             <div className="mt-5 space-y-4 text-sm">
-              <div className="flex justify-between border-b border-slate-100 pb-3">
-                <span className="text-slate-500">Avg. monthly bill</span>
-                <span className="font-semibold">${selectedArea.avgMonthlyBill}</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-100 pb-3">
-                <span className="text-slate-500">Median income</span>
-                <span className="font-semibold">${selectedArea.medianIncome.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-100 pb-3">
-                <span className="text-slate-500">Low-income households</span>
-                <span className="font-semibold">{selectedArea.lowIncomeHouseholdPercent}%</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-100 pb-3">
-                <span className="text-slate-500">Senior population</span>
-                <span className="font-semibold">{selectedArea.seniorPopulationPercent}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Solar potential</span>
-                <span className="font-semibold">{selectedArea.solarPotentialScore}/10</span>
-              </div>
+              <ProfileRow label="Avg. monthly bill" value={`$${selectedArea.avgMonthlyBill}`} />
+              <ProfileRow label="Median income" value={`$${selectedArea.medianIncome.toLocaleString()}`} />
+              <ProfileRow label="Renter households" value={`${selectedArea.renterHouseholdPercent}%`} />
+              <ProfileRow label="Owner-occupied households" value={`${selectedArea.ownerOccupiedPercent}%`} />
+              <ProfileRow label="Low-income households" value={`${selectedArea.lowIncomeHouseholdPercent}%`} />
+              <ProfileRow label="Retrofit eligibility gap" value={`${selectedArea.retrofitEligibilityGapScore}/100`} />
             </div>
           </div>
         </section>
@@ -199,10 +192,10 @@ export default function DashboardPage() {
         <section className="mt-8 grid gap-6 lg:grid-cols-2">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-bold text-slate-950">
-              Neighbourhood Comparison
+              Neighbourhood Priority Comparison
             </h2>
             <p className="mt-2 text-sm text-slate-600">
-              Compare priority scores across sample communities.
+              Compare overall energy burden priority scores across sample communities.
             </p>
 
             <div className="mt-6 h-72">
@@ -219,7 +212,7 @@ export default function DashboardPage() {
 
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-bold text-slate-950">
-              Equity Radar
+              Renter Burden Radar
             </h2>
             <p className="mt-2 text-sm text-slate-600">
               A quick visual of the main factors affecting this community.
@@ -241,7 +234,7 @@ export default function DashboardPage() {
 
         <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold text-slate-950">
-            Generated Community Report
+            Recommended Program Direction
           </h2>
 
           <div className="mt-4 rounded-3xl bg-slate-100 p-5">
@@ -249,30 +242,38 @@ export default function DashboardPage() {
             <p className="mt-2 text-slate-700">{recommendation}</p>
           </div>
 
-          <div className="mt-6">
-            <p className="font-semibold text-slate-950">
-              Suggested partner actions
-            </p>
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
-              {partnerActions.map((action) => (
-                <div
-                  key={action}
-                  className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700"
-                >
-                  {action}
-                </div>
-              ))}
-            </div>
+          <div className="mt-6 grid gap-3 md:grid-cols-2">
+            <ActionCard text="Prioritize renter-focused energy affordability outreach." />
+            <ActionCard text="Review whether owner-focused incentives are missing renter-heavy buildings." />
+            <ActionCard text="Create landlord-renter retrofit partnership opportunities." />
+            <ActionCard text="Promote direct-install supports and conservation education for renters." />
           </div>
 
           <Link
-  href="/report"
-  className="mt-6 inline-block rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800"
->
-  Generate Full Report
-</Link>
+            href="/report"
+            className="mt-6 inline-block rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800"
+          >
+            Generate Full Report
+          </Link>
         </section>
       </div>
     </main>
+  );
+}
+
+function ProfileRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between border-b border-slate-100 pb-3">
+      <span className="text-slate-500">{label}</span>
+      <span className="font-semibold text-slate-950">{value}</span>
+    </div>
+  );
+}
+
+function ActionCard({ text }: { text: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
+      {text}
+    </div>
   );
 }

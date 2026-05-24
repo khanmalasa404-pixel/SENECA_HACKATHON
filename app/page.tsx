@@ -6,17 +6,17 @@ export default function HomePage() {
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-16">
         <div className="max-w-4xl">
           <p className="mb-4 text-sm font-semibold uppercase tracking-wide text-emerald-700">
-            Energy • Mapping • Community Impact
+            Energy Burden • Renters • Program Access
           </p>
 
           <h1 className="text-5xl font-bold tracking-tight text-slate-950 md:text-6xl">
-            Smarter energy decisions start with location.
+            Helping utilities find where energy burden and renter upgrade gaps overlap.
           </h1>
 
           <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-700">
-            GridWise helps utilities, municipalities, and community partners identify
-            where grid reliability, energy affordability, climate resilience, and
-            sustainability investments can create the greatest community impact.
+            GridWise helps utilities and municipalities identify communities where
+            low-income renters face high energy costs but have limited access to
+            property-owner-focused energy-efficiency incentives.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
@@ -24,7 +24,7 @@ export default function HomePage() {
               href="/map"
               className="rounded-2xl bg-slate-950 px-6 py-3 font-semibold text-white shadow-sm hover:bg-slate-800"
             >
-              Open Community Energy Map
+              Open Energy Burden Map
             </Link>
 
             <Link
@@ -53,16 +53,16 @@ export default function HomePage() {
         <div id="how-it-works" className="mt-20 grid gap-4 md:grid-cols-3">
           {[
             [
-              "Map",
-              "Visualize communities by energy burden, outage risk, heat exposure, and program access.",
+              "Map the burden",
+              "Visualize neighbourhoods where energy costs take up a higher share of household income.",
             ],
             [
-              "Prioritize",
-              "Rank neighbourhoods by where support or infrastructure investment could make the biggest difference.",
+              "Find renter gaps",
+              "Identify renter-heavy communities that may be missed by property-owner-focused upgrade incentives.",
             ],
             [
-              "Act",
-              "Generate practical recommendations for utilities, municipalities, and community organizations.",
+              "Recommend action",
+              "Generate targeted program recommendations such as renter outreach, direct-install supports, and landlord partnerships.",
             ],
           ].map(([title, text]) => (
             <div
