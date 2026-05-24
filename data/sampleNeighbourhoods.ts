@@ -1,3 +1,5 @@
+export type IncentiveUptakeLikelihood = "low" | "medium" | "high";
+
 export type Neighbourhood = {
   name: string;
   city: string;
@@ -17,11 +19,21 @@ export type Neighbourhood = {
   renterHouseholdPercent: number;
   ownerOccupiedPercent: number;
   retrofitEligibilityGapScore: number;
+
+  // NEW: Renter equity fields from Step 8
+  renterPercent: number;
+  avgRentMonthly: number;
+  rentBurden: number;
+  buildingAge: number;
+  hasLandlordUpgradeBarrier: boolean;
+  renterEnergyBurden: number;
+  ownerEnergyBurden: number;
+  incentiveUptakeLikelihood: IncentiveUptakeLikelihood;
 };
 
 export const sampleNeighbourhoods: Neighbourhood[] = [
   {
-    name: "Jane-Finch",
+    name: "Jane-Finch",   
     city: "Toronto",
     avgMonthlyBill: 178,
     medianIncome: 42000,
@@ -37,6 +49,15 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     renterHouseholdPercent: 66,
     ownerOccupiedPercent: 34,
     retrofitEligibilityGapScore: 82,
+    // Added new fields (estimated based on Step 8's rough data mappings)
+    renterPercent: 66,
+    avgRentMonthly: 1350,
+    rentBurden: 36,
+    buildingAge: 1971,
+    hasLandlordUpgradeBarrier: true,
+    renterEnergyBurden: 10.8,
+    ownerEnergyBurden: 4.5,
+    incentiveUptakeLikelihood: "low",
   },
   {
     name: "Malton",
@@ -55,6 +76,15 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     renterHouseholdPercent: 58,
     ownerOccupiedPercent: 42,
     retrofitEligibilityGapScore: 74,
+    // Added new fields
+    renterPercent: 58,
+    avgRentMonthly: 1420,
+    rentBurden: 34,
+    buildingAge: 1975,
+    hasLandlordUpgradeBarrier: true,
+    renterEnergyBurden: 10.1,
+    ownerEnergyBurden: 4.2,
+    incentiveUptakeLikelihood: "medium",
   },
   {
     name: "Downtown Brampton",
@@ -73,6 +103,15 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     renterHouseholdPercent: 49,
     ownerOccupiedPercent: 51,
     retrofitEligibilityGapScore: 63,
+    // Added new fields
+    renterPercent: 49,
+    avgRentMonthly: 1450,
+    rentBurden: 31,
+    buildingAge: 1980,
+    hasLandlordUpgradeBarrier: false,
+    renterEnergyBurden: 8.5,
+    ownerEnergyBurden: 4.0,
+    incentiveUptakeLikelihood: "medium",
   },
   {
     name: "Rexdale",
@@ -91,6 +130,15 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     renterHouseholdPercent: 62,
     ownerOccupiedPercent: 38,
     retrofitEligibilityGapScore: 79,
+    // Added new fields
+    renterPercent: 62,
+    avgRentMonthly: 1380,
+    rentBurden: 35,
+    buildingAge: 1968,
+    hasLandlordUpgradeBarrier: true,
+    renterEnergyBurden: 10.9,
+    ownerEnergyBurden: 4.4,
+    incentiveUptakeLikelihood: "low",
   },
   {
     name: "Port Credit",
@@ -109,5 +157,14 @@ export const sampleNeighbourhoods: Neighbourhood[] = [
     renterHouseholdPercent: 32,
     ownerOccupiedPercent: 68,
     retrofitEligibilityGapScore: 38,
+    // Added new fields
+    renterPercent: 32,
+    avgRentMonthly: 1950,
+    rentBurden: 18,
+    buildingAge: 1988,
+    hasLandlordUpgradeBarrier: false,
+    renterEnergyBurden: 5.8,
+    ownerEnergyBurden: 3.9,
+    incentiveUptakeLikelihood: "high",
   },
 ];
