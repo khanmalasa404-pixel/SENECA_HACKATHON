@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import ArcGISMap from "@/components/ArcGISMap";
 import { sampleNeighbourhoods } from "@/data/sampleNeighbourhoods";
 import { calculateEnergyScores, getPriorityLabel } from "@/lib/scoring";
 
@@ -41,8 +44,9 @@ export default function MapPage() {
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
               GridWise helps utilities and municipalities identify neighbourhoods
-              where high energy costs, renter concentration, limited program access,
-              and building upgrade barriers create the greatest need for targeted support.
+              where high energy costs, renter concentration, limited program
+              access, and building upgrade barriers create the greatest need for
+              targeted support.
             </p>
           </div>
 
@@ -62,8 +66,8 @@ export default function MapPage() {
                   Renter Energy Burden Priority Map
                 </h2>
                 <p className="mt-2 text-sm text-slate-600">
-                  Prototype map view showing where energy burden, renter concentration,
-                  and program access gaps overlap.
+                  ArcGIS-powered map view showing where energy burden, renter
+                  concentration, and program access gaps overlap.
                 </p>
               </div>
 
@@ -81,17 +85,8 @@ export default function MapPage() {
             </div>
 
             <div className="mt-6 rounded-3xl bg-slate-100 p-5">
-              <div className="mb-5 rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center">
-                <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                GIS Map Integration Area                </p>
-                <h3 className="mt-2 text-2xl font-bold text-slate-950">
-                  Interactive neighbourhood priority map
-                </h3>
-                <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-                  Once Esri map layers or tools are provided, this section can be
-                  replaced with a live map showing neighbourhood boundaries, priority
-                  zones, renter concentration, energy burden, and program access gaps.
-                </p>
+              <div className="mb-5">
+                <ArcGISMap />
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
@@ -130,7 +125,9 @@ export default function MapPage() {
 
                       <div className="rounded-xl bg-slate-100 px-3 py-2">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Renter households</span>
+                          <span className="text-slate-500">
+                            Renter households
+                          </span>
                           <span className="font-semibold text-slate-950">
                             {area.renterHouseholdPercent}%
                           </span>
@@ -153,12 +150,34 @@ export default function MapPage() {
                       />
                     </div>
 
-                    <Link
-                      href="/dashboard"
-                      className="mt-5 inline-block text-sm font-semibold text-slate-950 underline"
-                    >
-                      View analysis
-                    </Link>
+                    <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold">
+                      <Link
+                        href={`/dashboard?community=${encodeURIComponent(
+                          area.name
+                        )}`}
+                        className="text-slate-950 underline"
+                      >
+                        View analysis
+                      </Link>
+
+                      <Link
+                        href={`/report?community=${encodeURIComponent(
+                          area.name
+                        )}`}
+                        className="text-slate-950 underline"
+                      >
+                        Report
+                      </Link>
+
+                      <Link
+                        href={`/simulator?community=${encodeURIComponent(
+                          area.name
+                        )}`}
+                        className="text-slate-950 underline"
+                      >
+                        Simulate
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -196,17 +215,18 @@ export default function MapPage() {
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-700">
                 Energy burden is not spread evenly across a city. Mapping helps
-                utilities see where low-income households, renters, older buildings,
-                and weak program access overlap, so support can be targeted more fairly.
+                utilities see where low-income households, renters, older
+                buildings, and weak program access overlap, so support can be
+                targeted more fairly.
               </p>
             </div>
 
             <div className="mt-6 rounded-3xl bg-slate-950 p-5 text-white">
               <h3 className="font-bold">Challenge alignment</h3>
               <p className="mt-2 text-sm leading-6 text-slate-300">
-                This map addresses the renter-owner misalignment by showing where
-                households may pay high energy bills but lack control over building
-                upgrades needed to reduce those costs.
+                This map addresses the renter-owner misalignment by showing
+                where households may pay high energy bills but lack control over
+                building upgrades needed to reduce those costs.
               </p>
             </div>
           </aside>
@@ -239,11 +259,12 @@ export default function MapPage() {
           </h2>
 
           <p className="mt-3 max-w-4xl leading-7 text-slate-700">
-            GridWise calculates a community priority score by combining energy burden,
-            renter retrofit barriers, program access gaps, building efficiency risk,
-            low-income vulnerability, and sustainability opportunity. The score is designed
-            to help utilities and municipalities identify where renter-focused support and
-            efficiency programs may create the greatest impact.
+            GridWise calculates a community priority score by combining energy
+            burden, renter retrofit barriers, program access gaps, building
+            efficiency risk, low-income vulnerability, and sustainability
+            opportunity. The score is designed to help utilities and
+            municipalities identify where renter-focused support and efficiency
+            programs may create the greatest impact.
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-3">

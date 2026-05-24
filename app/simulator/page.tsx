@@ -31,6 +31,43 @@ export default function SimulatorPage() {
       [field]: value,
     }));
   }
+  function improveProgramAccess() {
+    setArea((previous) => ({
+      ...previous,
+      programAccessScore: Math.min(10, previous.programAccessScore + 4),
+    }));
+  }
+  
+  function addDirectInstallProgram() {
+    setArea((previous) => ({
+      ...previous,
+      avgMonthlyBill: Math.max(80, Math.round(previous.avgMonthlyBill * 0.9)),
+      programAccessScore: Math.min(10, previous.programAccessScore + 2),
+      retrofitEligibilityGapScore: Math.max(
+        0,
+        previous.retrofitEligibilityGapScore - 15
+      ),
+    }));
+  }
+  
+  function launchLandlordPartnership() {
+    setArea((previous) => ({
+      ...previous,
+      buildingAgeScore: Math.max(1, previous.buildingAgeScore - 2),
+      retrofitEligibilityGapScore: Math.max(
+        0,
+        previous.retrofitEligibilityGapScore - 25
+      ),
+      programAccessScore: Math.min(10, previous.programAccessScore + 2),
+    }));
+  }
+  
+  function reduceBillByTenPercent() {
+    setArea((previous) => ({
+      ...previous,
+      avgMonthlyBill: Math.max(80, Math.round(previous.avgMonthlyBill * 0.9)),
+    }));
+  }
 
   const baselineScores = calculateEnergyScores(selectedCommunity);
   const scores = calculateEnergyScores(area);
@@ -92,6 +129,45 @@ export default function SimulatorPage() {
             </h2>
 
             <div className="mt-6 space-y-6">
+            <div className="mt-6 rounded-3xl bg-slate-100 p-5">
+  <p className="font-semibold text-slate-950">
+    Quick intervention tests
+  </p>
+  <p className="mt-2 text-sm leading-6 text-slate-600">
+    Click an intervention to simulate how renter-focused programs could reduce
+    the community priority score.
+  </p>
+
+  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+    <button
+      onClick={improveProgramAccess}
+      className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+    >
+      Improve Program Access
+    </button>
+
+    <button
+      onClick={addDirectInstallProgram}
+      className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+    >
+      Add Renter Direct-Install Program
+    </button>
+
+    <button
+      onClick={launchLandlordPartnership}
+      className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+    >
+      Launch Landlord Retrofit Partnership
+    </button>
+
+    <button
+      onClick={reduceBillByTenPercent}
+      className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+    >
+      Reduce Monthly Bill by 10%
+    </button>
+  </div>
+</div>
               <Slider
                 label="Average Monthly Energy Bill"
                 value={area.avgMonthlyBill}

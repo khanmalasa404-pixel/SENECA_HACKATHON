@@ -6,6 +6,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@arcgis/core": "^5.0.19",
     "lucide-react": "latest",
     "mongoose": "latest",
     "next": "latest",
