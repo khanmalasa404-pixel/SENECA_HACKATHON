@@ -35,6 +35,7 @@ Important:
 - Focus on renter affordability, shelter-cost burden, renter-owner split incentive problem, and targeted action.
 - Keep the response practical, clear, and non-technical.
 - Do not invent exact funding amounts, exact utility programs, or guarantees.
+- When referencing 39.5%, 38.5%, 36.7%, 32.2%, 27.9%, 25.5%, 23.4%, or 29.3%, call them shelter-cost burden values, not electricity energy burden values.
 
 Community data:
 ${JSON.stringify(community, null, 2)}
