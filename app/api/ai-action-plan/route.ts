@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     }
 
     const prompt = `
-You are an AI planning assistant for GridWise, an energy equity decision-support tool.
+You are an AI planning assistant for NRG, an energy equity decision-support tool.
 
 Use the community data and scores below to generate a concise action plan for utilities, municipalities, housing partners, and community organizations.
 

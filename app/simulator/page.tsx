@@ -101,11 +101,10 @@ export default function SimulatorPage() {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Energy Burden Scenario Simulator
+            RENTER BURDEN SCENARIO SIMULATOR
             </p>
             <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
-              Simulate renter energy burden risk
-            </h1>
+            Simulate renter affordability and upgrade-barrier risk            </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
               Adjust bills, income, renter concentration, program access,
               building efficiency risk, low-income vulnerability, and retrofit
@@ -295,7 +294,7 @@ export default function SimulatorPage() {
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <ResultCard
-                label="Energy Burden"
+                label="Energy-Cost Pressure"
                 value={`${scores.energyBurdenScore}/100`}
               />
 
@@ -328,12 +327,7 @@ export default function SimulatorPage() {
             <div className="mt-6 rounded-3xl bg-slate-100 p-5">
               <p className="font-semibold text-slate-950">What this means</p>
               <p className="mt-2 leading-7 text-slate-700">
-                This scenario shows how energy burden changes when households
-                face high monthly energy bills, lower incomes, high renter
-                concentration, weak program access, and limited control over
-                building upgrades. The score helps utilities identify where
-                renter-focused programs and landlord partnerships could reduce
-                affordability pressure.
+              This scenario shows how renter affordability risk changes when households face high monthly energy bills, lower incomes, high renter concentration, weak program access, and limited control over building upgrades.
               </p>
             </div>
 

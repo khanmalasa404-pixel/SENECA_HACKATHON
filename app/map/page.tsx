@@ -3,18 +3,25 @@
 import Link from "next/link";
 import ArcGISMap from "@/components/ArcGISMap";
 import { sampleNeighbourhoods } from "@/data/sampleNeighbourhoods";
-import { calculateEnergyScores, getPriorityLabel } from "@/lib/scoring";
+import { calculateEnergyScores } from "@/lib/scoring";
+
+function getMapPriorityLabel(score: number) {
+  if (score >= 70) return "High Priority";
+  if (score >= 50) return "Medium Priority";
+  return "Monitor";
+}
 
 export default function MapPage() {
   const communities = sampleNeighbourhoods
     .map((area) => {
       const scores = calculateEnergyScores(area);
+      const score = scores.overallPriorityScore;
 
       return {
         ...area,
-        score: scores.overallPriorityScore,
-        label: getPriorityLabel(scores.overallPriorityScore),
-        energyBurdenScore: scores.energyBurdenScore,
+        score,
+        label: getMapPriorityLabel(score),
+        shelterBurdenScore: Math.round(area.renterShelterBurdenPercent),
         renterUpgradeGapScore: scores.renterUpgradeGapScore,
         programAccessGapScore: scores.programAccessGapScore,
         buildingEfficiencyRiskScore: scores.buildingEfficiencyRiskScore,
@@ -23,13 +30,15 @@ export default function MapPage() {
     })
     .sort((a, b) => b.score - a.score);
 
-  const highPriority = communities.filter(
-    (area) => area.label === "High Priority"
-  );
-  const mediumPriority = communities.filter(
-    (area) => area.label === "Medium Priority"
-  );
-  const monitor = communities.filter((area) => area.label === "Monitor");
+  const highPriorityCount = communities.filter(
+    (area) => area.score >= 70
+  ).length;
+
+  const mediumPriorityCount = communities.filter(
+    (area) => area.score >= 50 && area.score < 70
+  ).length;
+
+  const monitorCount = communities.filter((area) => area.score < 50).length;
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-8">
@@ -37,14 +46,14 @@ export default function MapPage() {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Energy Burden Map
+              Community Burden Map
             </p>
             <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
-              Map where energy burden and renter retrofit gaps overlap
+              Map where renter affordability burden and retrofit gaps overlap
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
-              GridWise helps utilities and municipalities identify neighbourhoods
-              where high energy costs, renter concentration, limited program
+              NRG helps utilities and municipalities identify communities where
+              renter shelter-cost burden, renter concentration, limited program
               access, and building upgrade barriers create the greatest need for
               targeted support.
             </p>
@@ -63,11 +72,11 @@ export default function MapPage() {
             <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
               <div>
                 <h2 className="text-xl font-bold text-slate-950">
-                  Renter Energy Burden Priority Map
+                  Renter Affordability Priority Map
                 </h2>
                 <p className="mt-2 text-sm text-slate-600">
-                  ArcGIS-powered map view showing where energy burden, renter
-                  concentration, and program access gaps overlap.
+                  ArcGIS-powered map view showing where renter shelter-cost
+                  burden, renter concentration, and program access gaps overlap.
                 </p>
               </div>
 
@@ -119,8 +128,8 @@ export default function MapPage() {
 
                     <div className="mt-5 space-y-3 text-sm">
                       <MapMetric
-                        label="Energy burden"
-                        value={area.energyBurdenScore}
+                        label="Shelter burden"
+                        value={area.shelterBurdenScore}
                       />
 
                       <div className="rounded-xl bg-slate-100 px-3 py-2">
@@ -192,19 +201,19 @@ export default function MapPage() {
             <div className="mt-5 space-y-4">
               <SummaryCard
                 label="High priority communities"
-                value={highPriority.length}
-                note="Strong overlap between energy burden, renter barriers, and program gaps."
+                value={highPriorityCount}
+                note="Strong overlap between shelter-cost burden, renter barriers, and program gaps."
               />
 
               <SummaryCard
                 label="Medium priority communities"
-                value={mediumPriority.length}
+                value={mediumPriorityCount}
                 note="Good candidates for targeted renter outreach and monitoring."
               />
 
               <SummaryCard
                 label="Monitor communities"
-                value={monitor.length}
+                value={monitorCount}
                 note="Continue regular support and track changes over time."
               />
             </div>
@@ -214,10 +223,10 @@ export default function MapPage() {
                 Why location intelligence matters
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-700">
-                Energy burden is not spread evenly across a city. Mapping helps
-                utilities see where low-income households, renters, older
-                buildings, and weak program access overlap, so support can be
-                targeted more fairly.
+                Affordability burden and renter upgrade barriers are not spread
+                evenly across a city. Mapping helps utilities see where renter
+                households, shelter-cost burden, older buildings, and weak
+                program access overlap, so support can be targeted more fairly.
               </p>
             </div>
 
@@ -225,8 +234,9 @@ export default function MapPage() {
               <h3 className="font-bold">Challenge alignment</h3>
               <p className="mt-2 text-sm leading-6 text-slate-300">
                 This map addresses the renter-owner misalignment by showing
-                where households may pay high energy bills but lack control over
-                building upgrades needed to reduce those costs.
+                where households may face housing and energy affordability
+                pressure but lack control over building upgrades needed to
+                reduce long-term costs.
               </p>
             </div>
           </aside>
@@ -234,8 +244,8 @@ export default function MapPage() {
 
         <section className="mt-8 grid gap-6 lg:grid-cols-3">
           <InfoBox
-            title="1. Map energy burden"
-            text="Visualize communities by estimated energy cost pressure and household income."
+            title="1. Map affordability burden"
+            text="Visualize communities by renter shelter-cost burden, estimated energy-cost pressure, and household income."
           />
 
           <InfoBox
@@ -259,18 +269,17 @@ export default function MapPage() {
           </h2>
 
           <p className="mt-3 max-w-4xl leading-7 text-slate-700">
-            GridWise calculates a community priority score by combining energy
-            burden, renter retrofit barriers, program access gaps, building
-            efficiency risk, low-income vulnerability, and sustainability
-            opportunity. The score is designed to help utilities and
-            municipalities identify where renter-focused support and efficiency
-            programs may create the greatest impact.
+            NRG calculates a community priority score by combining real
+            shelter-cost burden and renter household data with prototype utility
+            and program-access inputs. The score is designed to help utilities
+            and municipalities identify where renter-focused support and
+            efficiency programs may create the greatest impact.
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             <MethodologyCard
-              title="Energy Burden"
-              text="Estimates how much household income may be spent on energy costs."
+              title="Shelter-Cost Burden"
+              text="Uses real ArcGIS / Statistics Canada shelter-cost burden data as an affordability-pressure indicator."
             />
 
             <MethodologyCard
@@ -310,17 +319,17 @@ export default function MapPage() {
           </h2>
 
           <p className="mt-3 max-w-4xl leading-7 text-slate-700">
-            GridWise uses ArcGIS / Statistics Canada Shelter Costs 2021 data at
-            the Census Subdivision level to support renter household percentage,
-            owner household percentage, and shelter-cost burden indicators. These
-            real city-level values are applied to selected GTA communities for
+            NRG uses ArcGIS / Statistics Canada Census Subdivision data for
+            shelter-cost burden, renter/owner household share, median household
+            income, population, dwelling counts, and density. These real
+            city-level values are applied to selected GTA communities for
             demonstration.
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             <MethodologyCard
               title="Real ArcGIS / StatsCan Data"
-              text="Renter households, owner households, and shelter-cost burden are based on the Shelter Costs 2021 Feature Service."
+              text="Renter households, owner households, shelter-cost burden, median household income, population, dwelling counts, and density are based on ArcGIS / Statistics Canada feature services."
             />
 
             <MethodologyCard
@@ -330,7 +339,7 @@ export default function MapPage() {
 
             <MethodologyCard
               title="Production Upgrade"
-              text="A full version would use finer geography such as dissemination areas, neighbourhood boundaries, utility billing data, and program participation records."
+              text="A full version would use finer geography such as dissemination areas, neighbourhood boundaries, utility billing data, outage records, and program participation records."
             />
           </div>
         </section>

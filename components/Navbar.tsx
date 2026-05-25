@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const links = [
   ["Home", "/"],
-  ["Energy Map", "/map"],
+  ["Community Burden Map", "/map"],
   ["Dashboard", "/dashboard"],
   ["Report", "/report"],
   ["Simulator", "/simulator"],
@@ -22,7 +22,7 @@ export function Navbar() {
               NRG
             </div>
             <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-700">
-              Energy Burden Mapper
+              Renter Equity Tool
             </div>
           </div>
         </Link>

@@ -46,10 +46,11 @@ useEffect(() => {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end print:hidden">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Community Energy Burden Action Report
+            COMMUNITY BURDEN ACTION REPORT
             </p>
             <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
-              {area.name} Renter Energy Burden Report
+              {area.name} Renter Affordability & Upgrade Gap Report
+
             </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
               A targeted action report for identifying where renter shelter-cost
@@ -90,8 +91,7 @@ useEffect(() => {
         <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm print:shadow-none">
           <div className="border-b border-slate-200 pb-6">
             <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-              GridWise Energy Burden & Renter Gap Report
-            </p>
+            NRG RENTER AFFORDABILITY & UPGRADE GAP REPORT            </p>
             <h2 className="mt-2 text-3xl font-bold text-slate-950">
               {area.name}, {area.city}
             </h2>
@@ -136,7 +136,7 @@ useEffect(() => {
               <span className="font-semibold">
                 {scores.overallPriorityScore}/100
               </span>
-              . GridWise identifies this community by combining real
+              . NRG identifies this community by combining real
               ArcGIS/Statistics Canada census indicators with prototype utility
               and program-access inputs. The key issue is not only affordability,
               but also the renter-owner split: renters may pay monthly utility
@@ -150,7 +150,7 @@ useEffect(() => {
               Core Recommendation
             </h3>
             <p className="mt-3 leading-7 text-slate-700">
-              GridWise recommends prioritizing {area.name} for renter-focused
+              NRG recommends prioritizing {area.name} for renter-focused
               energy affordability outreach, direct-install efficiency programs,
               landlord partnership opportunities, and targeted communication
               about bill support or conservation programs.

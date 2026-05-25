@@ -146,11 +146,10 @@ export default function DashboardPage() {
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-              Energy Burden Decision Dashboard
+            RENTER AFFORDABILITY DECISION DASHBOARD
             </p>
             <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950">
-              Understand where renter energy burden is highest
-            </h1>
+            Understand where renter affordability burden is highest            </h1>
             <p className="mt-3 max-w-3xl text-slate-600">
               This dashboard combines ArcGIS / Statistics Canada census
               indicators with prototype utility and program-access inputs to
@@ -388,7 +387,7 @@ export default function DashboardPage() {
       </p>
       <p className="mt-2 text-sm leading-6 text-slate-600">
         Generate a stakeholder-specific action plan using the selected
-        community data, priority scores, and GridWise methodology.
+        community data, priority scores, and NRG methodology.
       </p>
     </div>
 

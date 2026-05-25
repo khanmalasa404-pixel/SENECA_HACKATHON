@@ -62,7 +62,7 @@ export function calculateEnergyScores(area: Neighbourhood) {
 }
 
 export function getPriorityLabel(score: number) {
-  if (score >= 75) return "High Priority";
+  if (score >= 70) return "High Priority";
   if (score >= 50) return "Medium Priority";
   return "Monitor";
 }

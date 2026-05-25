@@ -9,30 +9,29 @@ function supportsWebGL2() {
   const canvas = document.createElement("canvas");
   return !!canvas.getContext("webgl2");
 }
-
 const priorityZones = [
   {
     name: "Jane-Finch",
     city: "Toronto",
-    score: 90,
+    score: 70,
     level: "High Priority",
     coordinates: [-79.5196, 43.757],
     summary:
-      "High energy burden, renter affordability pressure, and strong retrofit barrier.",
+      "Strong overlap between renter shelter-cost burden, affordability pressure, and retrofit barriers.",
   },
   {
     name: "Rexdale",
     city: "Toronto",
-    score: 86,
-    level: "High Priority",
+    score: 69,
+    level: "Medium Priority",
     coordinates: [-79.5663, 43.7214],
-    summary: "Strong renter retrofit gap and program access gap.",
+    summary: "Significant renter retrofit gap and program access gap.",
   },
   {
     name: "Malton",
     city: "Mississauga",
-    score: 79,
-    level: "High Priority",
+    score: 60,
+    level: "Medium Priority",
     coordinates: [-79.6386, 43.703],
     summary:
       "Renter affordability pressure with targeted program opportunity.",
@@ -40,7 +39,7 @@ const priorityZones = [
   {
     name: "Downtown Brampton",
     city: "Brampton",
-    score: 67,
+    score: 51,
     level: "Medium Priority",
     coordinates: [-79.7624, 43.686],
     summary: "Moderate affordability pressure and renter support opportunity.",
@@ -48,7 +47,7 @@ const priorityZones = [
   {
     name: "Port Credit",
     city: "Mississauga",
-    score: 43,
+    score: 38,
     level: "Monitor",
     coordinates: [-79.5866, 43.551],
     summary:
@@ -86,7 +85,7 @@ export default function ArcGISMap() {
       });
 
       const priorityLayer = new GraphicsLayer({
-        title: "GridWise Priority Zones",
+        title: "NRG Priority Zones",
       });
 
       map.add(priorityLayer);
@@ -238,7 +237,7 @@ function MapFallback() {
           </h3>
 
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            GridWise displays priority zones for communities where affordability
+        NRG displays priority zones for communities where affordability
             pressure, renter concentration, and program access gaps overlap.
           </p>
         </div>

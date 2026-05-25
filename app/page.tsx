@@ -10,22 +10,17 @@ export default function HomePage() {
           </p>
 
           <h1 className="text-5xl font-bold tracking-tight text-slate-950 md:text-6xl">
-            Helping utilities find where energy burden and renter upgrade gaps overlap.
-          </h1>
+          Helping utilities find where renter affordability burden and upgrade gaps overlap.          </h1>
 
           <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-700">
-            GridWise helps utilities and municipalities identify communities where
-            low-income renters face high energy costs but have limited access to
-            property-owner-focused energy-efficiency incentives.
-          </p>
+          NRG helps utilities and municipalities identify communities where renters face affordability pressure, high shelter-cost burden, and limited access to property-owner-focused energy-efficiency incentives.          </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
               href="/map"
               className="rounded-2xl bg-slate-950 px-6 py-3 font-semibold text-white shadow-sm hover:bg-slate-800"
             >
-              Open Energy Burden Map
-            </Link>
+              Open Community Burden Map            </Link>
 
             <Link
               href="/dashboard"
@@ -54,7 +49,7 @@ export default function HomePage() {
           {[
             [
               "Map the burden",
-              "Visualize neighbourhoods where energy costs take up a higher share of household income.",
+              "Visualize communities where renter shelter-cost burden, affordability pressure, and upgrade barriers overlap.",
             ],
             [
               "Find renter gaps",
