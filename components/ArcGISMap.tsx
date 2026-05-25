@@ -82,7 +82,7 @@ export default function ArcGISMap() {
       esriConfig.apiKey = process.env.NEXT_PUBLIC_ARCGIS_API_KEY || "";
 
       const map = new Map({
-        basemap: "arcgis/light-gray",
+        basemap: "gray-vector",
       });
 
       const priorityLayer = new GraphicsLayer({

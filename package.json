@@ -7,9 +7,12 @@
   },
   "dependencies": {
     "@arcgis/core": "^5.0.19",
+    "@google/genai": "^2.6.0",
+    "groq-sdk": "^1.2.0",
     "lucide-react": "latest",
     "mongoose": "latest",
     "next": "latest",
+    "openai": "^6.39.0",
     "react": "latest",
     "react-dom": "latest",
     "recharts": "latest"

@@ -35,7 +35,9 @@ export default function DashboardPage() {
   );
 
   const [view, setView] = useState("Utility View");
-
+  const [aiActionPlan, setAiActionPlan] = useState("");
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+  const [aiError, setAiError] = useState("");
   useEffect(() => {
     if (
       communityFromUrl &&
@@ -93,6 +95,50 @@ export default function DashboardPage() {
       score: areaScores.overallPriorityScore,
     };
   });
+  async function generateAiActionPlan() {
+    try {
+      setIsGeneratingAi(true);
+      setAiError("");
+      setAiActionPlan("");
+  
+      const response = await fetch("/api/ai-action-plan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          community: selectedArea,
+          scores,
+        }),
+      });
+  
+      const contentType = response.headers.get("content-type");
+  
+      if (!contentType?.includes("application/json")) {
+        const text = await response.text();
+        console.error("Non-JSON response from AI route:", text);
+        throw new Error(
+          "AI route did not return JSON. Check that app/api/ai-action-plan/route.ts exists and the server was restarted."
+        );
+      }
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate AI action plan.");
+      }
+  
+      setAiActionPlan(data.actionPlan);
+    } catch (error) {
+      setAiError(
+        error instanceof Error
+          ? error.message
+          : "Failed to generate AI action plan."
+      );
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-8">
@@ -334,6 +380,39 @@ export default function DashboardPage() {
             <p className="font-semibold text-slate-950">Recommendation</p>
             <p className="mt-2 text-slate-700">{recommendation}</p>
           </div>
+          <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-5">
+  <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+    <div>
+      <p className="font-semibold text-slate-950">
+        AI Action Plan Assistant
+      </p>
+      <p className="mt-2 text-sm leading-6 text-slate-600">
+        Generate a stakeholder-specific action plan using the selected
+        community data, priority scores, and GridWise methodology.
+      </p>
+    </div>
+
+    <button
+      onClick={generateAiActionPlan}
+      disabled={isGeneratingAi}
+      className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {isGeneratingAi ? "Generating..." : "Generate AI Action Plan"}
+    </button>
+  </div>
+
+  {aiError && (
+    <div className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-700">
+      {aiError}
+    </div>
+  )}
+
+  {aiActionPlan && (
+    <div className="mt-4 whitespace-pre-line rounded-2xl bg-slate-100 p-5 text-sm leading-7 text-slate-700">
+      {aiActionPlan}
+    </div>
+  )}
+</div>
 
           <div className="mt-6 grid gap-3 md:grid-cols-2">
             <ActionCard text="Prioritize renter-focused energy affordability outreach." />
